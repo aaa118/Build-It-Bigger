@@ -2,6 +2,7 @@ package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.util.Pair;
 import android.widget.Toast;
 
@@ -12,13 +13,15 @@ import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class EndPointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, String> {
+public class EndPointsAsyncTask extends AsyncTask<Pair<Context, String>, Void,  ArrayList<String>> {
     private static MyApi myApiService = null;
     private Context context;
 
     @Override
-    protected String doInBackground(Pair<Context, String>... params) {
+    protected ArrayList<String> doInBackground(Pair<Context, String>... params) {
         if(myApiService == null) {  // Only do this once
             MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
@@ -44,16 +47,22 @@ public class EndPointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, S
 //            return myApiService.sayHi(name).execute().getData();
 //        } catch (IOException e) {
 //            return e.getMessage();
-//        }
+        ArrayList<String> jokeslist = null;
+
         try {
-            return myApiService.getJokes().execute().getData();
+            jokeslist = (ArrayList<String>) myApiService.getJokes().execute().getJokesList();
         } catch (IOException e) {
-            return e.getMessage();
+            e.printStackTrace();
         }
+
+//        }
+            Log.i("AA_", "doInBackground: "+ jokeslist);
+            return   jokeslist;
     }
 
     @Override
-    protected void onPostExecute(String result) {
-        Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+    protected void onPostExecute(ArrayList<String> result) {
+        Log.i("AA_", "onPostExecute: "+ result);
+        Toast.makeText(context, result.get(2), Toast.LENGTH_LONG).show();
     }
 }

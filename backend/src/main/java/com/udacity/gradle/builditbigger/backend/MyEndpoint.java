@@ -32,7 +32,7 @@ public class MyEndpoint {
     public MyBean getJokes() {
         JokesList jokesList = new JokesList();
         MyBean response = new MyBean();
-        response.setData(jokesList.getOneJokes());
+        response.setJokesList(jokesList.getOneJokes());
         return response;
     }
 

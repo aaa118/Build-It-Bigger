@@ -1,5 +1,6 @@
 package com.udacity.gradle.builditbigger.backend;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** The object model for the data we are sending through endpoints */
@@ -7,7 +8,7 @@ public class MyBean {
 
     private String myData;
 
-    private List<String> jokesList;
+    private ArrayList<String> jokesList;
 
     public String getData() {
         return myData;
@@ -17,11 +18,11 @@ public class MyBean {
         myData = data;
     }
 
-    public List<String> getJokesList() {
+    public ArrayList<String> getJokesList() {
         return jokesList;
     }
 
-    public void setJokesList(List<String> jokesList) {
+    public void setJokesList(ArrayList<String> jokesList) {
         this.jokesList = jokesList;
     }
 
