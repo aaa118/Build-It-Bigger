@@ -1,10 +1,9 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.util.Pair;
-import android.widget.Toast;
 
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.extensions.android.json.AndroidJsonFactory;
@@ -14,15 +13,16 @@ import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
-public class EndPointsAsyncTask extends AsyncTask<Pair<Context, String>, Void,  ArrayList<String>> {
+public class EndPointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, ArrayList<String>> {
+    public static final String JOKES_LIST = "JOKES_LIST";
     private static MyApi myApiService = null;
     private Context context;
 
     @Override
     protected ArrayList<String> doInBackground(Pair<Context, String>... params) {
-        if(myApiService == null) {  // Only do this once
+        if (myApiService == null) {  // Only do this once
             MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
                     new AndroidJsonFactory(), null)
                     // options for running against local devappserver
@@ -42,11 +42,6 @@ public class EndPointsAsyncTask extends AsyncTask<Pair<Context, String>, Void,  
 
         context = params[0].first;
         String name = params[0].second;
-
-//        try {
-//            return myApiService.sayHi(name).execute().getData();
-//        } catch (IOException e) {
-//            return e.getMessage();
         ArrayList<String> jokeslist = null;
 
         try {
@@ -54,15 +49,16 @@ public class EndPointsAsyncTask extends AsyncTask<Pair<Context, String>, Void,  
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-//        }
-            Log.i("AA_", "doInBackground: "+ jokeslist);
-            return   jokeslist;
+        return jokeslist;
     }
 
     @Override
     protected void onPostExecute(ArrayList<String> result) {
-        Log.i("AA_", "onPostExecute: "+ result);
-        Toast.makeText(context, result.get(2), Toast.LENGTH_LONG).show();
+        SharedPreferences sharedPref = context.getSharedPreferences("JokesPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        Random random = new Random();
+        int randomList = random.nextInt(4);
+        editor.putString(JOKES_LIST, result.get(randomList));
+        editor.apply();
     }
 }
