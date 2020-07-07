@@ -1,7 +1,6 @@
 package com.udacity.gradle.builditbigger;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Pair;
 
@@ -16,9 +15,12 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class EndPointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, ArrayList<String>> {
-    public static final String JOKES_LIST = "JOKES_LIST";
     private static MyApi myApiService = null;
-    private Context context;
+    public AsyncResponse delegate;
+
+    public EndPointsAsyncTask(AsyncResponse delegate) {
+        this.delegate = delegate;
+    }
 
     @Override
     protected ArrayList<String> doInBackground(Pair<Context, String>... params) {
@@ -40,8 +42,6 @@ public class EndPointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, A
             myApiService = builder.build();
         }
 
-        context = params[0].first;
-        String name = params[0].second;
         ArrayList<String> jokeslist = null;
 
         try {
@@ -54,11 +54,14 @@ public class EndPointsAsyncTask extends AsyncTask<Pair<Context, String>, Void, A
 
     @Override
     protected void onPostExecute(ArrayList<String> result) {
-        SharedPreferences sharedPref = context.getSharedPreferences("JokesPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
         Random random = new Random();
         int randomList = random.nextInt(4);
-        editor.putString(JOKES_LIST, result.get(randomList));
-        editor.apply();
+        String joke;
+        if (result !=null) {
+            joke = result.get(randomList);
+        } else {
+            joke = "GCM is Offline";
+        }
+        delegate.processFinish(joke);
     }
 }
